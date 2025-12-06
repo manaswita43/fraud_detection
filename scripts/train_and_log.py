@@ -15,9 +15,8 @@ parser.add_argument("--model-out", default="app/model.pkl")
 parser.add_argument("--mlflow-uri", default=None)
 parser.add_argument("--run-name", default="baseline")
 args = parser.parse_args()
-
-if args.mlflow_uri:
-    mlflow.set_tracking_uri(args.mlflow_uri)
+    
+mlflow.set_tracking_uri("http://127.0.0.1:8100")    
 
 mlflow.set_experiment("fraud-detection")
 with mlflow.start_run(run_name=args.run_name):
