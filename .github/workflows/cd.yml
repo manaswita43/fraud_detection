@@ -1,0 +1,50 @@
+name: CD - Build & Push to Artifact Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '444.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Configure docker auth
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev -q
+
+      - name: Build Docker image
+        run: |
+          docker build -t us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/aml-repo/fraud-detector:${{ github.sha }} ./app
+
+      - name: Push Docker image
+        run: |
+          docker push us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/aml-repo/fraud-detector:${{ github.sha }}
+
+      - name: Tag latest
+        run: |
+          docker tag us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/aml-repo/fraud-detector:${{ github.sha }} \
+            us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/aml-repo/fraud-detector:latest
+          docker push us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/aml-repo/fraud-detector:latest
+
+      # CML reporting (optional)
+      - name: Run CML reporter
+        uses: iterative/setup-cml@v1
+      - name: CML comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Build and push complete" > /tmp/cml_output.md
+          python - <<'PY'
+          print("CML: build succeeded")
+          PY
