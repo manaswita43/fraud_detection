@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-detector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fraud-detector
+  template:
+    metadata:
+      labels:
+        app: fraud-detector
+    spec:
+      containers:
+      - name: fraud-detector
+        image: us-central1-docker.pkg.dev/mlops-473405/aml-repo/fraud-detector:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: MODEL_PATH
+          value: "/app/model.pkl"
