@@ -1,0 +1,5 @@
+outs:
+- md5: e95369e5e2859f169533fd575c00d63f
+  size: 75333448
+  hash: md5
+  path: transactions_2022.csv

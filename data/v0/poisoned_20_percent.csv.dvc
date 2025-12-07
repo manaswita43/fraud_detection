@@ -1,0 +1,5 @@
+outs:
+- md5: 0aa22f0f446c5b264d321ae5e90aa942
+  size: 75333448
+  hash: md5
+  path: poisoned_20_percent.csv
