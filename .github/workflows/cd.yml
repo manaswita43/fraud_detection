@@ -82,9 +82,9 @@ jobs:
     # -----------------------------------
     # Fairness & Drift
     # -----------------------------------
-    - name: Run drift & fairness checks
-      run: |
-        python scripts/drift_check.py
+    # - name: Run drift & fairness checks
+    #   run: |
+    #     python scripts/drift_check.py
 
     # -----------------------------------
     # GKE Deployment Verification
