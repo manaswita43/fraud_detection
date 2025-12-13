@@ -1,0 +1,22 @@
+============================================================
+MODEL EXPLAINABILITY RESULTS (SHAP)
+============================================================
+
+Top 10 Most Important Features:
+feature  importance
+    V14    0.000867
+    V12    0.000374
+     V4    0.000274
+    V10    0.000196
+    V11    0.000187
+    V26    0.000126
+     V6    0.000103
+ Amount    0.000096
+    V16    0.000090
+    V23    0.000081
+
+============================================================
+Key Insights:
+• Most predictive feature: V14 (Mean |SHAP| = 0.0009)
+• Higher SHAP values indicate stronger contribution to fraud prediction.
+• Feature importance is averaged over validation samples.

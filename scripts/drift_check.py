@@ -5,6 +5,8 @@ import mlflow
 import argparse
 import numpy as np
 from pathlib import Path
+import matplotlib.pyplot as plt
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 from evidently import Report
 from evidently.presets import DataDriftPreset, DataSummaryPreset
@@ -15,7 +17,7 @@ parser.add_argument("--v0-data", default="data/v0/transactions_2022_with_locatio
 parser.add_argument("--v1-data", default="data/v1/transactions_2023.csv")
 args = parser.parse_args()
 
-mlflow.set_tracking_uri("http://34.71.166.41:8100")
+mlflow.set_tracking_uri("http://34.172.186.194:8100")
 mlflow.set_experiment("fraud-detection")
 
 with mlflow.start_run(run_name="drift_check_evidently"):
@@ -50,11 +52,49 @@ with mlflow.start_run(run_name="drift_check_evidently"):
     df_v0 = df_v0.reindex(columns=feature_cols + [target_col], fill_value=0)
     df_v1 = df_v1.reindex(columns=feature_cols + [target_col], fill_value=0)
 
+    X_v0, y_v0 = df_v0[feature_cols], df_v0[target_col]
+    X_v1, y_v1 = df_v1[feature_cols], df_v1[target_col]
+
     # -----------------------------
-    # Add predictions (optional but OK)
+    # Predictions
     # -----------------------------
-    df_v0["prediction"] = model.predict(df_v0[feature_cols])
-    df_v1["prediction"] = model.predict(df_v1[feature_cols])
+    preds_v0 = model.predict(X_v0)
+    preds_v1 = model.predict(X_v1)
+
+    # -----------------------------
+    # ### NEW: Performance metrics
+    # -----------------------------
+    f1_v0 = f1_score(y_v0, preds_v0)
+    f1_v1 = f1_score(y_v1, preds_v1)
+    prec_v0 = precision_score(y_v0, preds_v0, zero_division=0)
+    prec_v1 = precision_score(y_v1, preds_v1, zero_division=0)
+    rec_v0 = recall_score(y_v0, preds_v0, zero_division=0)
+    rec_v1 = recall_score(y_v1, preds_v1, zero_division=0)
+
+    mlflow.log_metric("f1_v0", float(f1_v0))
+    mlflow.log_metric("f1_v1", float(f1_v1))
+    mlflow.log_metric("precision_v0", float(prec_v0))
+    mlflow.log_metric("precision_v1", float(prec_v1))
+    mlflow.log_metric("recall_v0", float(rec_v0))
+    mlflow.log_metric("recall_v1", float(rec_v1))
+
+    # -----------------------------
+    # ### NEW: Drift comparison plot
+    # -----------------------------
+    plt.figure(figsize=(6, 4))
+    plt.bar(["v0", "v1"], [f1_v0, f1_v1])
+    plt.ylabel("F1-score")
+    plt.title("Model Performance Drift (F1-score)")
+    plt.tight_layout()
+
+    artifacts_dir = Path("artifacts")
+    artifacts_dir.mkdir(exist_ok=True)
+
+    drift_plot = artifacts_dir / "drift_comparison.png"
+    plt.savefig(drift_plot)
+    plt.close()
+
+    mlflow.log_artifact(str(drift_plot))
 
     # -----------------------------
     # Evidently Drift Report
@@ -71,20 +111,10 @@ with mlflow.start_run(run_name="drift_check_evidently"):
         current_data=df_v1[feature_cols]
     )
 
-    # -----------------------------
-    # Save & log report (FIXED)
-    # -----------------------------
-    report_path = Path("artifacts")
-    report_path.mkdir(parents=True, exist_ok=True)
-
-    report_file = report_path / "evidently_drift_report.html"
-
-    # IMPORTANT: convert Path → str
+    report_file = artifacts_dir / "evidently_drift_report.html"
     my_eval.save_html(str(report_file))
-
-    # Ensure file exists before logging
-    assert report_file.exists(), "Evidently report was not generated!"
+    assert report_file.exists()
 
     mlflow.log_artifact(str(report_file))
 
-    print("Evidently drift report generated and logged to MLflow.")
+    print("Evidently report + performance drift plot logged to MLflow.")
