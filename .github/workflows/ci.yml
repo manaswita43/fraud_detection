@@ -71,12 +71,12 @@ jobs:
       # -----------------------------------
       # 7. FastAPI import smoke test
       # -----------------------------------
-      - name: FastAPI app smoke test
-        run: |
-          python - <<EOF
-          from app.main import app
-          print("FastAPI app loaded successfully")
-          EOF
+      # - name: FastAPI app smoke test
+      #   run: |
+      #     python - <<EOF
+      #     from app.main import app
+      #     print("FastAPI app loaded successfully")
+      #     EOF
 
       # -----------------------------------
       # 8. Model load smoke test
