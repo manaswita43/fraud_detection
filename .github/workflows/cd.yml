@@ -97,6 +97,7 @@ jobs:
 
     - name: Verify rollout
       run: |
+        sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
         kubectl rollout status deployment/$DEPLOYMENT_NAME \
           -n $NAMESPACE --timeout=120s
 
