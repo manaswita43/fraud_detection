@@ -72,9 +72,7 @@ gcloud container clusters get-credentials fraud-gke-cluster --zone us-central1-c
 
 Each time a GKE cluster is created, do these 3 steps:
 ```bash
-sudo apt-get install 
-
-google-cloud-cli-gke-gcloud-auth-plugin
+sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
 
 kubectl create serviceaccount telemetry-access --namespace default
 
