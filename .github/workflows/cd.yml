@@ -118,14 +118,14 @@ jobs:
         REC=$(jq '.recall' metrics.json)
         F1=$(jq '.f1' metrics.json)
 
-        echo "## 📊 MLOps CD Report" > report.md
+        echo "## MLOps CD Report" > report.md
         echo "" >> report.md
         echo "### 🔧 Build & Deployment" >> report.md
         echo "- Docker Image: \`$IMAGE_URI\`" >> report.md
         echo "- GKE Deployment: ✅ Verified" >> report.md
         echo "" >> report.md
 
-        echo "### 📈 Model Performance" >> report.md
+        echo "### Model Performance" >> report.md
         echo "| Metric | Value |" >> report.md
         echo "|-------|-------|" >> report.md
         echo "| Accuracy | $ACC |" >> report.md
@@ -134,16 +134,16 @@ jobs:
         echo "| F1 Score | $F1 |" >> report.md
         echo "" >> report.md
 
-        echo "### 🔍 Explainability" >> report.md
+        echo "### Explainability" >> report.md
         echo "- SHAP summary plot generated" >> report.md
         echo "" >> report.md
 
-        echo "### ⚖️ Fairness & Drift" >> report.md
+        echo "### Fairness & Drift" >> report.md
         echo "- Evidently drift report generated" >> report.md
         echo "- Drift comparison plot created" >> report.md
         echo "" >> report.md
 
-        echo "### 📜 Commit" >> report.md
+        echo "### Commit" >> report.md
         echo "\`${{ github.sha }}\`" >> report.md
 
         cml comment create report.md
