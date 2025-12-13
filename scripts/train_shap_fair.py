@@ -24,7 +24,7 @@ args = parser.parse_args()
 if args.mlflow_uri:
     mlflow.set_tracking_uri(args.mlflow_uri)
 else:
-    mlflow.set_tracking_uri('http://136.111.193.119:8100')
+    mlflow.set_tracking_uri('http://34.71.166.41:8100')
 
 mlflow.set_experiment("fraud-detection")
 
@@ -196,6 +196,52 @@ with mlflow.start_run(run_name="final_with_location"):
         plt.savefig(bar_img, bbox_inches="tight")
         plt.close()
         mlflow.log_artifact(bar_img)
+        
+    # --- Create and Save Textual SHAP Report Artifact ---
+    try:
+        # Use the already normalized 2D SHAP values
+        # shap_vals_2d shape: (n_samples, n_features)
+        shap_importance = np.abs(shap_vals_2d).mean(axis=0)
+
+        importance_df = pd.DataFrame({
+            "feature": X_val_sample.columns,
+            "importance": shap_importance
+        }).sort_values(by="importance", ascending=False)
+
+        # Ensure artifact directory exists
+        report_dir = Path("artifacts")
+        report_dir.mkdir(parents=True, exist_ok=True)
+        report_path = report_dir / "shap_report.txt"
+
+        with open(report_path, "w") as f:
+            f.write("=" * 60 + "\n")
+            f.write("MODEL EXPLAINABILITY RESULTS (SHAP)\n")
+            f.write("=" * 60 + "\n\n")
+
+            f.write("Top 10 Most Important Features:\n")
+            f.write(importance_df.head(10).to_string(index=False))
+            f.write("\n\n" + "=" * 60 + "\n")
+
+            top_feature = importance_df.iloc[0]
+            f.write("Key Insights:\n")
+            f.write(
+                f"• Most predictive feature: {top_feature['feature']} "
+                f"(Mean |SHAP| = {top_feature['importance']:.4f})\n"
+            )
+            f.write(
+                "• Higher SHAP values indicate stronger contribution to fraud prediction.\n"
+            )
+            f.write(
+                "• Feature importance is averaged over validation samples.\n"
+            )
+
+        mlflow.log_artifact(str(report_path))
+        print(f"Textual SHAP report saved to {report_path}")
+
+    except Exception as e:
+        print(f"Error during textual SHAP report generation: {e}")
+
+
 
     # ---- Fairness metric (demographic parity difference) ----
     loc_col = None

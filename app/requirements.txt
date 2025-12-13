@@ -15,3 +15,7 @@ opentelemetry-exporter-otlp
 shap
 fairlearn
 locust
+evidently
+dvc[gs]
+pytest
+httpx
