@@ -91,13 +91,13 @@ jobs:
     # -----------------------------------
     - name: Get GKE credentials
       run: |
+        gcloud components install gke-gcloud-auth-plugin
         gcloud container clusters get-credentials $CLUSTER_NAME \
           --region $REGION \
           --project $PROJECT_ID
 
     - name: Verify rollout
       run: |
-        sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
         kubectl rollout status deployment/$DEPLOYMENT_NAME \
           -n $NAMESPACE --timeout=120s
 
