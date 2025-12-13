@@ -83,11 +83,9 @@ kubectl annotate serviceaccount telemetry-access \
 
 To confirm the telemetry-access serviceaccount exists,
 ```bash
-kubectl get serviceaccount telemetry-access -n default
+kubectl describe serviceaccount telemetry-access -n default # check for annotation exists
 
-kubectl describe serviceaccount telemetry-access -n default - check for annotation exists
-
-gcloud iam service-accounts get-iam-policy telemetry-access@mlops-473405.iam.gserviceaccount.com - check IAM policy includes it
+gcloud iam service-accounts get-iam-policy telemetry-access@mlops-473405.iam.gserviceaccount.com # check IAM policy includes it
 ```
 
 ---
