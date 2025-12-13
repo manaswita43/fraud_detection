@@ -75,7 +75,7 @@ jobs:
     # -----------------------------------
     - name: Run explainability
       run: |
-        python scripts/explainability.py
+        python scripts/train_shap_fair.py
 
     # -----------------------------------
     # Fairness & Drift
