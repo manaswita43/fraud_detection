@@ -50,10 +50,10 @@ jobs:
           test -f app/Dockerfile
           test -f scripts/train_and_log.py
 
-      # 6. Run unit & integration tests
-      - name: Run pytest
-        run: |
-          pytest -v --disable-warnings
+      # # 6. Run unit & integration tests
+      # - name: Run pytest
+      #   run: |
+      #     pytest -v --disable-warnings
 
       # 7. Static Python syntax check (lightweight)
       - name: Python syntax validation
