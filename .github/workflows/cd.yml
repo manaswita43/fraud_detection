@@ -19,7 +19,7 @@ jobs:
       REGION: us-central1
       REPO_NAME: aml-repo
       IMAGE_NAME: fraud-detector
-      CLUSTER_NAME: fraud-cluster
+      CLUSTER_NAME: fraud-gke-cluster
       DEPLOYMENT_NAME: fraud-detector
       NAMESPACE: default
 
