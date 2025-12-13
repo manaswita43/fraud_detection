@@ -46,6 +46,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y jq
         npm install -g @dvcorg/cml
+        pip install --upgrade pip
+        pip install sniffio
         pip install -r app/requirements.txt
 
     # -----------------------------------
