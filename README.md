@@ -57,6 +57,41 @@ gcloud services enable \
 gsutil mb -l us-central1 gs://mlops-oppe2
 ```
 
+### Create GKE cluster
+```bash
+# create GKE cluster (autopilot or standard; we'll use standard with 3 nodes)
+gcloud container clusters create fraud-gke-cluster \
+  --zone us-central1-c \
+  --num-nodes 3 \
+  --machine-type=e2-standard-4 \
+  --project mlops-473405
+
+# get credentials
+gcloud container clusters get-credentials fraud-gke-cluster --zone us-central1-c
+```
+
+Each time a GKE cluster is created, do these 3 steps:
+```bash
+sudo apt-get install 
+
+google-cloud-cli-gke-gcloud-auth-plugin
+
+kubectl create serviceaccount telemetry-access --namespace default
+
+kubectl annotate serviceaccount telemetry-access \
+  --namespace default \
+  iam.gke.io/gcp-service-account=telemetry-access@mlops-473405.iam.gserviceaccount.com
+```
+
+To confirm the telemetry-access serviceaccount exists,
+```bash
+kubectl get serviceaccount telemetry-access -n default
+
+kubectl describe serviceaccount telemetry-access -n default - check for annotation exists
+
+gcloud iam service-accounts get-iam-policy telemetry-access@mlops-473405.iam.gserviceaccount.com - check IAM policy includes it
+```
+
 ---
 
 ## 1. Data preparation (split into v0 and v1)
@@ -130,43 +165,7 @@ Notes:
 ---
 
 ## 7. Deploy to GKE (cluster + manifests)
-```bash
-# create GKE cluster (autopilot or standard; we'll use standard with 3 nodes)
-gcloud container clusters create fraud-gke-cluster \
-  --zone us-central1-c \
-  --num-nodes 3 \
-  --machine-type=e2-standard-4 \
-  --project mlops-473405
-
-# get credentials
-gcloud container clusters get-credentials fraud-gke-cluster --zone us-central1-c
-```
 **Refer k8s/deployment.yaml, k8s/service.yaml**
-
-
-Each time a GKE cluster is created, do these 3 steps:
-```bash
-sudo apt-get install 
-
-google-cloud-cli-gke-gcloud-auth-plugin
-
-kubectl create serviceaccount telemetry-access --namespace default
-
-kubectl annotate serviceaccount telemetry-access \
-  --namespace default \
-  iam.gke.io/gcp-service-account=telemetry-access@mlops-473405.iam.gserviceaccount.com
-```
-
-To confirm the telemetry-access serviceaccount exists,
-```bash
-kubectl get serviceaccount telemetry-access -n default
-
-kubectl describe serviceaccount telemetry-access -n default - check for annotation exists
-
-gcloud iam service-accounts get-iam-policy telemetry-access@mlops-473405.iam.gserviceaccount.com - check IAM policy includes it
-```
-
-
 
 Apply manifests:
 ```bash
