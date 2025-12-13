@@ -194,7 +194,7 @@ Run Locust from a client machine (or Cloud Shell port-forward):
 ```bash
 # run locust pointing to the LoadBalancer IP:
 LOCUST_HOST="http://<EXTERNAL_IP>"
-locust -f locustfile.py --host=${LOCUST_HOST} --users 50 --spawn-rate 5 --run-time 5m
+locust -f locust/locustfile.py --host=${LOCUST_HOST} --users 50 --spawn-rate 5 --run-time 5m
 ```
 
 Watch HPA scale:
