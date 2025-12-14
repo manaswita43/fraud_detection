@@ -54,20 +54,20 @@ gcloud services enable \
 
 ### Create GCS bucket
 ```bash
-gsutil mb -l us-central1 gs://mlops-oppe2
+gsutil mb -l us-central1 gs://mlops-oppe2-new
 ```
 
 ### Create GKE cluster
 ```bash
 # create GKE cluster (autopilot or standard; we'll use standard with 3 nodes)
-gcloud container clusters create fraud-gke-cluster \
+gcloud container clusters create heart-disease-cluster \
   --zone us-central1-c \
   --num-nodes 3 \
   --machine-type=e2-standard-4 \
   --project mlops-473405
 
 # get credentials
-gcloud container clusters get-credentials fraud-gke-cluster --zone us-central1-c
+gcloud container clusters get-credentials heart-disease-cluster --zone us-central1-c
 ```
 
 Each time a GKE cluster is created, do these 3 steps:
@@ -110,7 +110,7 @@ pip install -r app/requirements.txt
 # run mlflow
 mlflow server \
   --backend-store-uri sqlite:///mlflow.db \
-  --default-artifact-root gs://mlops-oppe2/mlflow-artifacts \
+  --default-artifact-root gs://mlops-oppe2-new/mlflow-artifacts \
   --host 0.0.0.0 --port 8100 --allowed-hosts '*' --cors-allowed-origins '*'
 
 python3 scripts/train_and_log.py
@@ -136,18 +136,18 @@ ls app/model.pkl
 gcloud artifacts repositories create aml-repo \
   --repository-format=docker \
   --location=us-central1 \
-  --description="Docker repo for fraud detector"
+  --description="Docker repo for heart disease detector"
 
 # configure docker auth (Cloud Build can also push)
 gcloud auth configure-docker us-central1-docker.pkg.dev
 
 # build and tag
 cd app
-docker build -t us-central1-docker.pkg.dev/mlops-473405/aml-repo/fraud-detector:v1 .
-docker tag fraud-detector:v1 us-central1-docker.pkg.dev/mlops-473405/aml-repo/fraud-detector:latest
+docker build -t us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:v1 .
+docker tag fraud-detector:v1 us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:latest
 
 # push (if local docker has permission)
-docker push us-central1-docker.pkg.dev/mlops-473405/aml-repo/fraud-detector:v1
+docker push us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:v1
 ```
 
 ---
@@ -234,7 +234,7 @@ ls data/v0 | grep poisoned
 ## 12. Version poisoned datasets with DVC and push to GCS remote
 ```bash
 dvc init
-dvc remote add -d gcsremote gs://mlops-oppe2/mlops-473405-dvc
+dvc remote add -d gcsremote gs://mlops-oppe2-new/mlops-473405-dvc
 # If not already set up, give dvc access to GCS via gcloud credentials:
 gcloud auth application-default login
 ```
@@ -248,7 +248,7 @@ dvc add data/v1/transactions_2023.csv
 
 git add data/*.dvc .gitignore
 git commit -m "dvc track poisoned datasets and v0/v1"
-dvc push  # pushes to gs://mlops-oppe2/mlops-473405-dvc
+dvc push  # pushes to gs://mlops-oppe2-new/mlops-473405-dvc
 ```
 
 ---
