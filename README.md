@@ -144,7 +144,7 @@ gcloud auth configure-docker us-central1-docker.pkg.dev
 # build and tag
 cd app
 docker build -t us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:v1 .
-docker tag fraud-detector:v1 us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:latest
+docker tag heart-disease-detector:v1 us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:latest
 
 # push (if local docker has permission)
 docker push us-central1-docker.pkg.dev/mlops-473405/aml-repo/heart-disease-detector:v1
